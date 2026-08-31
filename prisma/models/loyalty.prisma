@@ -1,0 +1,86 @@
+model LoyaltyAccount {
+  id                     String   @id @default(uuid()) @db.Uuid
+  customerId             String   @unique
+  pointsBalance          Int      @default(0)
+  lifetimePointsEarned   Int      @default(0)
+  lifetimePointsRedeemed Int      @default(0)
+  createdAt              DateTime @default(now())
+  updatedAt              DateTime @updatedAt
+
+  customer User @relation(fields: [customerId],references: [id])
+
+  transactions LoyaltyTransaction[]
+}
+
+
+
+// LOYALTY TRANSACTION
+
+
+model LoyaltyTransaction {
+  id               String                 @id @default(uuid()) @db.Uuid
+  loyaltyAccountId String
+  orderId          String?
+  rewardId         String?
+  type             LoyaltyTransactionType
+  points           Int
+  description      String?
+  createdAt        DateTime               @default(now())
+
+  loyaltyAccount LoyaltyAccount @relation(fields: [loyaltyAccountId], references: [id] )
+
+  order Order? @relation(fields: [orderId],references: [id])
+
+  reward Reward? @relation(fields: [rewardId],references: [id])
+
+  // IDEMPOTENCY:
+  // A given order cannot generate the same loyalty operation twice.
+  // Example:
+  // Order O1 + EARN can only exist once.
+  @@unique([orderId, type])
+}
+
+
+
+// REWARD SCHEMA
+model Reward {
+  id          String       @id @default(uuid()) @db.Uuid
+  customerId  String
+
+  name        String
+  description String?
+  type        RewardType
+  value       Decimal?
+  pointsCost  Int
+
+  status      RewardStatus @default(AVAILABLE)
+
+  issuedAt    DateTime     @default(now())
+  expiresAt   DateTime?
+  redeemedAt  DateTime?
+
+  createdAt   DateTime     @default(now())
+  updatedAt   DateTime     @updatedAt
+
+  customer User @relation(fields: [customerId],references: [id])
+
+  loyaltyTransactions LoyaltyTransaction[]
+}
+
+enum RewardType{
+    PERCENTAGE_DISCOUNT
+    FIXED_DISCOUNT
+    FRRE_PRODUCT
+}
+enum RewardStatus{
+    AVAILABLE
+    REEMED
+    CANCELLED
+    EXPIRED
+}
+enum LoyaltyTransactionType{
+    EARNED
+    REEMED
+    EXPIRED
+    ADJUSTMENT
+}

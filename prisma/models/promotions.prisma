@@ -1,0 +1,92 @@
+enum PromotionType {
+  PERCENTAGE
+  FIXED_AMOUNT
+  FREE_PRODUCT
+}
+
+model Promotion {
+  id           String  @id @default(uuid()) @db.Uuid
+  restaurantId String
+  branchId     String?
+
+  name        String
+  description String?
+
+  type  PromotionType
+  value Decimal?
+
+  minimumOrderAmount Decimal?
+  maximumDiscount    Decimal?
+
+  startAt DateTime
+  endAt   DateTime
+
+  usageLimit            Int?
+  usageLimitPerCustomer Int?
+
+  isActive Boolean @default(true)
+
+  createdAt DateTime @default(now())
+  updatedAt DateTime @updatedAt
+
+  restaurant Restaurant @relation(fields: [restaurantId],references:[id])
+
+  branch Branch? @relation(fields: [branchId],references:[id])
+
+  products    PromotionProduct[]
+  categories  PromotionCategory[]
+  redemptions PromotionRedemption[]
+}
+
+
+// PROMOTION PRODUCT
+
+
+model PromotionProduct {
+  promotionId String
+  productId   String
+
+  promotion Promotion @relation(fields: [promotionId],references:[id])
+
+  product Product @relation( fields: [productId],references:[id])
+
+  @@id([promotionId, productId])
+}
+
+
+// PROMOTION CATEGORY
+
+
+model PromotionCategory {
+  promotionId String
+  categoryId  String
+
+  promotion Promotion @relation(fields: [promotionId],references:[id])
+
+  category Category @relation(fields: [categoryId], references: [id])
+
+  @@id([promotionId, categoryId])
+}
+
+// PROMOTION REDEMPTION
+
+model PromotionRedemption {
+  id String @id @default(uuid()) @db.Uuid
+
+  promotionId String
+  userId      String
+  orderId     String
+
+  discountAmount Decimal
+  redeemedAt     DateTime @default(now())
+
+  promotion Promotion @relation(fields: [promotionId], references: [id])
+
+  user User @relation(fields: [userId], references: [id])
+
+  order Order @relation(fields: [orderId], references: [id])
+
+  // IDEMPOTENCY:
+  // Same promotion cannot be applied twice to the same order.
+  @@unique([promotionId, orderId])
+}

@@ -1,0 +1,133 @@
+model Restaurant {
+  id            String   @id @default(uuid()) @db.Uuid
+  name          String
+  slug          String   @unique
+  description   String?
+  email         String?
+  phone         String?
+  website       String?
+  logoUrl       String?
+  coverImageUrl String?
+  currency      String
+  timezone      String
+  createdAt     DateTime @default(now())
+  updatedAt     DateTime @updatedAt
+
+  branches   Branch[]
+  media      RestaurantMedia[]
+  categories Category[]
+  products   Product[]
+  promotions Promotion[]
+  campaigns  Campaign[]
+}
+
+model Branch {
+  id             String   @id @default(uuid()) @db.Uuid
+  restaurantId   String
+  name           String
+  code           String
+  phone          String?
+  email          String?
+  addressLine1   String
+  addressLine2   String?
+  city           String
+  region         String?
+  postalCode     String?
+  country        String
+  latitude       Decimal?
+  longitude      Decimal?
+  timezone       String
+  isActive       Boolean  @default(true)
+  createdAt      DateTime @default(now())
+  updatedAt      DateTime @updatedAt
+
+  restaurant Restaurant @relation(fields: [restaurantId],references: [id])
+
+  staffMembers     StaffMember[]
+  branchProducts   BranchProduct[]
+  productDiscounts ProductDiscount[]
+  reviews          BranchReview[]
+  orders           Order[]
+  promotions       Promotion[]
+  posIntegrations  POSIntegration[]
+
+  @@unique([restaurantId, code])
+}
+
+model RestaurantMedia {
+  id           String    @id @default(uuid()) @db.Uuid
+  restaurantId String
+  url          String
+  type         MediaType
+  altText      String?
+  position     Int       @default(0)
+  isPrimary    Boolean   @default(false)
+  createdAt    DateTime  @default(now())
+
+  restaurant Restaurant @relation(fields: [restaurantId],references: [id])
+}
+
+model User {
+  id              String     @id @default(uuid()) @db.Uuid
+  firstName       String
+  lastName        String
+  email           String     @unique
+  phone           String?
+  passwordHash    String
+  imageUrl        String?
+  dateOfBirth     DateTime?
+  status          UserStatus @default(ACTIVE)
+  emailVerifiedAt DateTime?
+  phoneVerifiedAt DateTime?
+  lastLoginAt     DateTime?
+  createdAt       DateTime   @default(now())
+  updatedAt       DateTime   @updatedAt
+
+  staffMemberships     StaffMember[]
+  branchReviews        BranchReview[]
+  productReviews       ProductReview[]
+  orders               Order[]
+  loyaltyAccount       LoyaltyAccount?
+  rewards              Reward[]
+  promotionRedemptions PromotionRedemption[]
+  campaignRecipients   CampaignRecipient[]
+}
+
+model StaffMember {
+  id        String    @id @default(uuid()) @db.Uuid
+  userId    String
+  branchId  String
+  role      StaffRole
+  isActive  Boolean   @default(true)
+  createdAt DateTime  @default(now())
+  updatedAt DateTime  @updatedAt
+
+  user User @relation(fields: [userId],references: [id])
+
+  branch Branch @relation(fields: [branchId],references: [id])
+
+  @@unique([userId, branchId])
+}
+
+enum Currency {
+    USD
+    MAD
+    EURO
+}
+enum UserStatus{
+    ACTIVE
+    INACTIVE
+    SUSPENDED
+}
+enum MediaType{
+    IMAGE
+    VIDEO
+}
+
+enum StaffRole{
+    OWNER
+    MANAGER
+    CASHIER
+    KITCHEN
+    WAITER
+}
