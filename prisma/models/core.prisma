@@ -91,6 +91,7 @@ model User {
   rewards              Reward[]
   promotionRedemptions PromotionRedemption[]
   campaignRecipients   CampaignRecipient[]
+  refreshSessions RefreshSession[]
 }
 
 model StaffMember {
@@ -107,6 +108,30 @@ model StaffMember {
   branch Branch @relation(fields: [branchId],references: [id])
 
   @@unique([userId, branchId])
+}
+
+model RefreshSession {
+  id        String @id @default(uuid())
+  tokenHash String @unique
+  familyId  String
+
+  revokedAt DateTime?
+  expiresAt DateTime
+
+  replacedById String? @unique
+
+  replacedBy RefreshSession? @relation("TokenRotation",fields: [replacedById],references: [id])
+
+  replaces RefreshSession? @relation("TokenRotation")
+
+  userId String
+  user   User @relation(fields: [userId], references: [id])
+
+  createdAt DateTime @default(now())
+  updatedAt DateTime @updatedAt
+
+  @@index([familyId])
+  @@index([userId])
 }
 
 enum Currency {
