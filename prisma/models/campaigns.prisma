@@ -30,52 +30,49 @@ enum RecipientStatus {
 }
 
 model Campaign {
-  id           String          @id @default(uuid())  @db.Uuid
-  restaurantId String
+  id           String @id @default(uuid()) @db.Uuid
+  restaurantId String @db.Uuid
 
-  name         String
-  type         CampaignType
-  channel      CampaignChannel
+  name    String
+  type    CampaignType
+  channel CampaignChannel
 
-  subject      String?
-  content      String
+  subject String?
+  content String
 
-  status       CampaignStatus  @default(DRAFT)
+  status CampaignStatus @default(DRAFT)
 
-  scheduledAt  DateTime?
-  startedAt    DateTime?
-  completedAt  DateTime?
+  scheduledAt DateTime?
+  startedAt   DateTime?
+  completedAt DateTime?
 
-  createdAt    DateTime        @default(now())
-  updatedAt    DateTime        @updatedAt
+  createdAt DateTime @default(now())
+  updatedAt DateTime @updatedAt
 
-  restaurant Restaurant @relation(fields: [restaurantId],references: [id])
+  restaurant Restaurant @relation(fields: [restaurantId], references: [id])
 
   recipients CampaignRecipient[]
 }
 
-
-
 // CAMPAIGN RECIPIENT
 
-
 model CampaignRecipient {
-  id          String          @id @default(uuid())  @db.Uuid
-  campaignId  String
-  userId      String
+  id         String @id @default(uuid()) @db.Uuid
+  campaignId String @db.Uuid
+  userId     String @db.Uuid
 
-  status      RecipientStatus @default(PENDING)
+  status RecipientStatus @default(PENDING)
 
   sentAt      DateTime?
   deliveredAt DateTime?
   openedAt    DateTime?
   clickedAt   DateTime?
 
-  createdAt   DateTime        @default(now())
+  createdAt DateTime @default(now())
 
-  campaign Campaign @relation(fields: [campaignId],references: [id] )
+  campaign Campaign @relation(fields: [campaignId], references: [id])
 
-  user User @relation(fields: [userId],references: [id])
+  user User @relation(fields: [userId], references: [id])
 
   // IDEMPOTENCY:
   // Prevents inserting/sending the same campaign recipient twice.

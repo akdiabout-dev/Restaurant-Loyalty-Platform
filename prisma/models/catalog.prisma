@@ -1,11 +1,11 @@
 enum DiscountType {
-    PERCENTAGE
-    FIXED_AMOUNT
+  PERCENTAGE
+  FIXED_AMOUNT
 }
 
 model Category {
   id           String   @id @default(uuid()) @db.Uuid
-  restaurantId String
+  restaurantId String @db.Uuid
   name         String
   description  String?
   imageUrl     String?
@@ -14,17 +14,16 @@ model Category {
   createdAt    DateTime @default(now())
   updatedAt    DateTime @updatedAt
 
-  restaurant Restaurant @relation(fields: [restaurantId],references: [id])
+  restaurant Restaurant @relation(fields: [restaurantId], references: [id])
 
-  products             Product[]
-  promotionCategories  PromotionCategory[]
+  products            Product[]
+  promotionCategories PromotionCategory[]
 }
-
 
 model Product {
   id           String   @id @default(uuid()) @db.Uuid
-  restaurantId String
-  categoryId   String
+  restaurantId String @db.Uuid
+  categoryId   String @db.Uuid
   name         String
   slug         String
   description  String?
@@ -36,22 +35,21 @@ model Product {
 
   restaurant Restaurant @relation(fields: [restaurantId], references: [id])
 
-  category Category @relation(fields: [categoryId],references: [id])
+  category Category @relation(fields: [categoryId], references: [id])
 
-  media              ProductMedia[]
-  branchProducts     BranchProduct[]
-  discounts          ProductDiscount[]
-  reviews            ProductReview[]
-  orderItems         OrderItem[]
-  promotionProducts  PromotionProduct[]
+  media             ProductMedia[]
+  branchProducts    BranchProduct[]
+  discounts         ProductDiscount[]
+  reviews           ProductReview[]
+  orderItems        OrderItem[]
+  promotionProducts PromotionProduct[]
 
   @@unique([restaurantId, slug])
 }
 
-
 model ProductMedia {
   id        String    @id @default(uuid()) @db.Uuid
-  productId String
+  productId String @db.Uuid
   url       String
   type      MediaType
   altText   String?
@@ -59,27 +57,26 @@ model ProductMedia {
   isPrimary Boolean   @default(false)
   createdAt DateTime  @default(now())
 
-  product Product @relation(fields: [productId],references: [id])
+  product Product @relation(fields: [productId], references: [id])
 }
 
 model BranchProduct {
-  branchId    String
-  productId   String
+  branchId    String @db.Uuid
+  productId   String @db.Uuid
   price       Decimal?
-  isAvailable Boolean @default(true)
+  isAvailable Boolean  @default(true)
 
-  branch Branch @relation(fields: [branchId],references: [id])
+  branch Branch @relation(fields: [branchId], references: [id])
 
-  product Product @relation(fields: [productId],references: [id])
+  product Product @relation(fields: [productId], references: [id])
 
   @@id([branchId, productId])
 }
 
-
 model ProductDiscount {
   id        String       @id @default(uuid()) @db.Uuid
-  productId String
-  branchId  String?
+  productId String @db.Uuid
+  branchId  String? @db.Uuid
   type      DiscountType
   value     Decimal
   startAt   DateTime
@@ -88,7 +85,7 @@ model ProductDiscount {
   createdAt DateTime     @default(now())
   updatedAt DateTime     @updatedAt
 
-  product Product @relation(fields: [productId],references: [id])
+  product Product @relation(fields: [productId], references: [id])
 
-  branch Branch? @relation(fields: [branchId],references: [id])
+  branch Branch? @relation(fields: [branchId], references: [id])
 }

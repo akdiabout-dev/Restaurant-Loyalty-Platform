@@ -3,7 +3,7 @@ model Restaurant {
   name          String
   slug          String   @unique
   description   String?
-  email         String?
+  email         String? 
   phone         String?
   website       String?
   logoUrl       String?
@@ -22,26 +22,26 @@ model Restaurant {
 }
 
 model Branch {
-  id             String   @id @default(uuid()) @db.Uuid
-  restaurantId   String
-  name           String
-  code           String
-  phone          String?
-  email          String?
-  addressLine1   String
-  addressLine2   String?
-  city           String
-  region         String?
-  postalCode     String?
-  country        String
-  latitude       Decimal?
-  longitude      Decimal?
-  timezone       String
-  isActive       Boolean  @default(true)
-  createdAt      DateTime @default(now())
-  updatedAt      DateTime @updatedAt
+  id           String   @id @default(uuid()) @db.Uuid
+  restaurantId String @db.Uuid
+  name         String
+  code         String
+  phone        String?
+  email        String?
+  addressLine1 String
+  addressLine2 String?
+  city         String
+  region       String?
+  postalCode   String?
+  country      String
+  latitude     Decimal?
+  longitude    Decimal?
+  timezone     String
+  isActive     Boolean  @default(true)
+  createdAt    DateTime @default(now())
+  updatedAt    DateTime @updatedAt
 
-  restaurant Restaurant @relation(fields: [restaurantId],references: [id])
+  restaurant Restaurant @relation(fields: [restaurantId], references: [id])
 
   staffMembers     StaffMember[]
   branchProducts   BranchProduct[]
@@ -56,7 +56,7 @@ model Branch {
 
 model RestaurantMedia {
   id           String    @id @default(uuid()) @db.Uuid
-  restaurantId String
+  restaurantId String @db.Uuid
   url          String
   type         MediaType
   altText      String?
@@ -64,7 +64,7 @@ model RestaurantMedia {
   isPrimary    Boolean   @default(false)
   createdAt    DateTime  @default(now())
 
-  restaurant Restaurant @relation(fields: [restaurantId],references: [id])
+  restaurant Restaurant @relation(fields: [restaurantId], references: [id])
 }
 
 model User {
@@ -91,41 +91,41 @@ model User {
   rewards              Reward[]
   promotionRedemptions PromotionRedemption[]
   campaignRecipients   CampaignRecipient[]
-  refreshSessions RefreshSession[]
+  refreshSessions      RefreshSession[]
 }
 
 model StaffMember {
   id        String    @id @default(uuid()) @db.Uuid
-  userId    String
-  branchId  String
+  userId    String @db.Uuid
+  branchId  String @db.Uuid
   role      StaffRole
   isActive  Boolean   @default(true)
   createdAt DateTime  @default(now())
   updatedAt DateTime  @updatedAt
 
-  user User @relation(fields: [userId],references: [id])
+  user User @relation(fields: [userId], references: [id])
 
-  branch Branch @relation(fields: [branchId],references: [id])
+  branch Branch @relation(fields: [branchId], references: [id])
 
   @@unique([userId, branchId])
 }
 
 model RefreshSession {
-  id        String @id @default(uuid())
+  id        String @id @default(uuid()) @db.Uuid
   tokenHash String @unique
-  familyId  String
+  familyId  String @default(uuid()) @db.Uuid
 
   revokedAt DateTime?
   expiresAt DateTime
 
-  replacedById String? @unique
+  replacedById String? @unique @db.Uuid
 
-  replacedBy RefreshSession? @relation("TokenRotation",fields: [replacedById],references: [id])
+  replacedBy RefreshSession? @relation("TokenRotation", fields: [replacedById], references: [id])
 
   replaces RefreshSession? @relation("TokenRotation")
 
-  userId String
-  user   User @relation(fields: [userId], references: [id])
+  userId String @db.Uuid
+  user   User   @relation(fields: [userId], references: [id])
 
   createdAt DateTime @default(now())
   updatedAt DateTime @updatedAt
@@ -135,24 +135,26 @@ model RefreshSession {
 }
 
 enum Currency {
-    USD
-    MAD
-    EURO
-}
-enum UserStatus{
-    ACTIVE
-    INACTIVE
-    SUSPENDED
-}
-enum MediaType{
-    IMAGE
-    VIDEO
+  USD
+  MAD
+  EURO
 }
 
-enum StaffRole{
-    OWNER
-    MANAGER
-    CASHIER
-    KITCHEN
-    WAITER
+enum UserStatus {
+  ACTIVE
+  INACTIVE
+  SUSPENDED
+}
+
+enum MediaType {
+  IMAGE
+  VIDEO
+}
+
+enum StaffRole {
+  OWNER
+  MANAGER
+  CASHIER
+  KITCHEN
+  WAITER
 }

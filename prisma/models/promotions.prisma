@@ -6,8 +6,8 @@ enum PromotionType {
 
 model Promotion {
   id           String  @id @default(uuid()) @db.Uuid
-  restaurantId String
-  branchId     String?
+  restaurantId String @db.Uuid
+  branchId     String? @db.Uuid
 
   name        String
   description String?
@@ -29,39 +29,35 @@ model Promotion {
   createdAt DateTime @default(now())
   updatedAt DateTime @updatedAt
 
-  restaurant Restaurant @relation(fields: [restaurantId],references:[id])
+  restaurant Restaurant @relation(fields: [restaurantId], references: [id])
 
-  branch Branch? @relation(fields: [branchId],references:[id])
+  branch Branch? @relation(fields: [branchId], references: [id])
 
   products    PromotionProduct[]
   categories  PromotionCategory[]
   redemptions PromotionRedemption[]
 }
 
-
 // PROMOTION PRODUCT
 
-
 model PromotionProduct {
-  promotionId String
-  productId   String
+  promotionId String @db.Uuid
+  productId   String @db.Uuid
 
-  promotion Promotion @relation(fields: [promotionId],references:[id])
+  promotion Promotion @relation(fields: [promotionId], references: [id])
 
-  product Product @relation( fields: [productId],references:[id])
+  product Product @relation(fields: [productId], references: [id])
 
   @@id([promotionId, productId])
 }
 
-
 // PROMOTION CATEGORY
 
-
 model PromotionCategory {
-  promotionId String
-  categoryId  String
+  promotionId String @db.Uuid
+  categoryId  String @db.Uuid
 
-  promotion Promotion @relation(fields: [promotionId],references:[id])
+  promotion Promotion @relation(fields: [promotionId], references: [id])
 
   category Category @relation(fields: [categoryId], references: [id])
 
@@ -73,9 +69,9 @@ model PromotionCategory {
 model PromotionRedemption {
   id String @id @default(uuid()) @db.Uuid
 
-  promotionId String
-  userId      String
-  orderId     String
+  promotionId String @db.Uuid
+  userId      String @db.Uuid
+  orderId     String @db.Uuid
 
   discountAmount Decimal
   redeemedAt     DateTime @default(now())

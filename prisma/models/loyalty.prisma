@@ -1,37 +1,34 @@
 model LoyaltyAccount {
   id                     String   @id @default(uuid()) @db.Uuid
-  customerId             String   @unique
+  userId             String   @unique @db.Uuid
   pointsBalance          Int      @default(0)
   lifetimePointsEarned   Int      @default(0)
   lifetimePointsRedeemed Int      @default(0)
   createdAt              DateTime @default(now())
   updatedAt              DateTime @updatedAt
 
-  customer User @relation(fields: [customerId],references: [id])
+  customer User @relation(fields: [userId], references: [id])
 
   transactions LoyaltyTransaction[]
 }
 
-
-
 // LOYALTY TRANSACTION
-
 
 model LoyaltyTransaction {
   id               String                 @id @default(uuid()) @db.Uuid
-  loyaltyAccountId String
-  orderId          String?
-  rewardId         String?
+  loyaltyAccountId String @db.Uuid
+  orderId          String? @db.Uuid
+  rewardId         String? @db.Uuid
   type             LoyaltyTransactionType
   points           Int
   description      String?
   createdAt        DateTime               @default(now())
 
-  loyaltyAccount LoyaltyAccount @relation(fields: [loyaltyAccountId], references: [id] )
+  loyaltyAccount LoyaltyAccount @relation(fields: [loyaltyAccountId], references: [id])
 
-  order Order? @relation(fields: [orderId],references: [id])
+  order Order? @relation(fields: [orderId], references: [id])
 
-  reward Reward? @relation(fields: [rewardId],references: [id])
+  reward Reward? @relation(fields: [rewardId], references: [id])
 
   // IDEMPOTENCY:
   // A given order cannot generate the same loyalty operation twice.
@@ -40,12 +37,10 @@ model LoyaltyTransaction {
   @@unique([orderId, type])
 }
 
-
-
 // REWARD SCHEMA
 model Reward {
-  id          String       @id @default(uuid()) @db.Uuid
-  customerId  String
+  id         String @id @default(uuid()) @db.Uuid
+  userId String @db.Uuid
 
   name        String
   description String?
@@ -53,34 +48,36 @@ model Reward {
   value       Decimal?
   pointsCost  Int
 
-  status      RewardStatus @default(AVAILABLE)
+  status RewardStatus @default(AVAILABLE)
 
-  issuedAt    DateTime     @default(now())
-  expiresAt   DateTime?
-  redeemedAt  DateTime?
+  issuedAt   DateTime  @default(now())
+  expiresAt  DateTime?
+  redeemedAt DateTime?
 
-  createdAt   DateTime     @default(now())
-  updatedAt   DateTime     @updatedAt
+  createdAt DateTime @default(now())
+  updatedAt DateTime @updatedAt
 
-  customer User @relation(fields: [customerId],references: [id])
+  user User @relation(fields: [userId], references: [id])
 
   loyaltyTransactions LoyaltyTransaction[]
 }
 
-enum RewardType{
-    PERCENTAGE_DISCOUNT
-    FIXED_DISCOUNT
-    FRRE_PRODUCT
+enum RewardType {
+  PERCENTAGE_DISCOUNT
+  FIXED_DISCOUNT
+  FRRE_PRODUCT
 }
-enum RewardStatus{
-    AVAILABLE
-    REEMED
-    CANCELLED
-    EXPIRED
+
+enum RewardStatus {
+  AVAILABLE
+  REEMED
+  CANCELLED
+  EXPIRED
 }
-enum LoyaltyTransactionType{
-    EARNED
-    REEMED
-    EXPIRED
-    ADJUSTMENT
+
+enum LoyaltyTransactionType {
+  EARNED
+  REEMED
+  EXPIRED
+  ADJUSTMENT
 }
