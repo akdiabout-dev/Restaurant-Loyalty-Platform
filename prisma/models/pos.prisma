@@ -1,0 +1,75 @@
+enum POSProvider {
+  SQUARE
+  TOAST
+  CLOVER
+  CUSTOM
+}
+
+enum IntegrationStatus {
+  ACTIVE
+  INACTIVE
+  ERROR
+  DISCONNECTED
+}
+
+enum ProcessingStatus {
+  PENDING
+  PROCESSING
+  PROCESSED
+  FAILED
+}
+
+// POS INTEGRATION
+
+model POSIntegration {
+  id       String @id @default(uuid()) @db.Uuid
+  branchId String @db.Uuid
+
+  provider POSProvider
+
+  externalMerchantId String?
+  externalLocationId String?
+
+  status IntegrationStatus @default(INACTIVE)
+
+  accessTokenEncrypted  String?
+  refreshTokenEncrypted String?
+
+  tokenExpiresAt DateTime?
+  lastSyncAt     DateTime?
+
+  createdAt DateTime @default(now())
+  updatedAt DateTime @updatedAt
+
+  branch Branch @relation(fields: [branchId], references: [id])
+
+  externalTransactions ExternalTransaction[]
+
+  @@unique([branchId, provider])
+}
+
+// EXTERNAL TRANSACTION
+
+model ExternalTransaction {
+  id               String @id @default(uuid()) @db.Uuid
+  posIntegrationId String @db.Uuid
+
+  externalId String
+  // IDEMPOTENCY:
+  // Transaction/event ID received from POS provider.
+
+  type    String
+  payload Json
+
+  status ProcessingStatus @default(PENDING)
+
+  processedAt DateTime?
+  createdAt   DateTime  @default(now())
+
+  posIntegration POSIntegration @relation(fields: [posIntegrationId], references: [id])
+
+  // IDEMPOTENCY:
+  // Same POS transaction/webhook cannot be inserted twice
+  // for the same integration.
+  @@unique([posIntegrationId, externalId])
+}

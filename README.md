@@ -274,16 +274,19 @@ restaurant-loyalty/
 │
 ├── prisma/
 │   ├── schema.prisma
+│   │
 │   └── models/
-│       ├── restaurant.prisma
-│       ├── user.prisma
+│       ├── core.prisma
 │       ├── catalog.prisma
-│       ├── order.prisma
+│       ├── reviews.prisma
+│       ├── orders.prisma
 │       ├── loyalty.prisma
-│       ├── promotion.prisma
-│       └── integration.prisma
+│       ├── promotions.prisma
+│       ├── pos.prisma
+│       └── campaigns.prisma
 │
 ├── src/
+│   │
 │   ├── config/
 │   │   └── env.ts
 │   │
@@ -296,20 +299,95 @@ restaurant-loyalty/
 │   │   └── validate.middleware.ts
 │   │
 │   ├── modules/
-│   │   ├── restaurants/
-│   │   ├── users/
+│   │   │
+│   │   ├── core/
+│   │   │   ├── restaurants/
+│   │   │   │   ├── restaurant.controller.ts
+│   │   │   │   ├── restaurant.service.ts
+│   │   │   │   ├── restaurant.routes.ts
+│   │   │   │   ├── restaurant.schema.ts
+│   │   │   │   └── restaurant.types.ts
+│   │   │   │
+│   │   │   ├── branches/
+│   │   │   │   ├── branch.controller.ts
+│   │   │   │   ├── branch.service.ts
+│   │   │   │   ├── branch.routes.ts
+│   │   │   │   ├── branch.schema.ts
+│   │   │   │   └── branch.types.ts
+│   │   │   │
+│   │   │   ├── users/
+│   │   │   │   ├── user.controller.ts
+│   │   │   │   ├── user.service.ts
+│   │   │   │   ├── user.routes.ts
+│   │   │   │   ├── user.schema.ts
+│   │   │   │   └── user.types.ts
+│   │   │   │
+│   │   │   └── staff/
+│   │   │       ├── staff.controller.ts
+│   │   │       ├── staff.service.ts
+│   │   │       ├── staff.routes.ts
+│   │   │       ├── staff.schema.ts
+│   │   │       └── staff.types.ts
+│   │   │
 │   │   ├── catalog/
+│   │   │   ├── categories/
+│   │   │   ├── products/
+│   │   │   ├── product-media/
+│   │   │   ├── branch-products/
+│   │   │   └── product-discounts/
+│   │   │
 │   │   ├── reviews/
+│   │   │   ├── branch-reviews/
+│   │   │   └── product-reviews/
+│   │   │
 │   │   ├── orders/
+│   │   │   ├── order.controller.ts
+│   │   │   ├── order.service.ts
+│   │   │   ├── order.routes.ts
+│   │   │   ├── order.schema.ts
+│   │   │   ├── order.types.ts
+│   │   │   └── payments/
+│   │   │
 │   │   ├── loyalty/
+│   │   │   ├── accounts/
+│   │   │   ├── transactions/
+│   │   │   └── rewards/
+│   │   │
 │   │   ├── promotions/
+│   │   │   ├── promotion.controller.ts
+│   │   │   ├── promotion.service.ts
+│   │   │   ├── promotion.routes.ts
+│   │   │   ├── promotion.schema.ts
+│   │   │   ├── promotion.types.ts
+│   │   │   └── redemptions/
+│   │   │
 │   │   ├── pos/
+│   │   │   ├── pos.controller.ts
+│   │   │   ├── pos.service.ts
+│   │   │   ├── pos.routes.ts
+│   │   │   ├── pos.types.ts
+│   │   │   │
+│   │   │   ├── adapters/
+│   │   │   │   ├── square.adapter.ts
+│   │   │   │   ├── toast.adapter.ts
+│   │   │   │   ├── clover.adapter.ts
+│   │   │   │   ├── lightspeed.adapter.ts
+│   │   │   │   └── spoton.adapter.ts
+│   │   │   │
+│   │   │   └── webhooks/
+│   │   │
 │   │   └── campaigns/
+│   │       ├── campaign.controller.ts
+│   │       ├── campaign.service.ts
+│   │       ├── campaign.routes.ts
+│   │       ├── campaign.schema.ts
+│   │       ├── campaign.types.ts
+│   │       └── recipients/
 │   │
 │   ├── shared/
 │   │   ├── errors/
-│   │   ├── types/
-│   │   └── utils/
+│   │   ├── utils/
+│   │   └── types/
 │   │
 │   ├── app.ts
 │   └── server.ts

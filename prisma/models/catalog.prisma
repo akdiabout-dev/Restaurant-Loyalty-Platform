@@ -1,0 +1,91 @@
+enum DiscountType {
+  PERCENTAGE
+  FIXED_AMOUNT
+}
+
+model Category {
+  id           String   @id @default(uuid()) @db.Uuid
+  restaurantId String   @db.Uuid
+  name         String
+  description  String?
+  imageUrl     String?
+  position     Int      @default(0)
+  isActive     Boolean  @default(true)
+  createdAt    DateTime @default(now())
+  updatedAt    DateTime @updatedAt
+
+  restaurant Restaurant @relation(fields: [restaurantId], references: [id])
+
+  products            Product[]
+  promotionCategories PromotionCategory[]
+}
+
+model Product {
+  id           String   @id @default(uuid()) @db.Uuid
+  restaurantId String   @db.Uuid
+  categoryId   String   @db.Uuid
+  name         String
+  slug         String
+  description  String?
+  price        Decimal
+  isAvailable  Boolean  @default(true)
+  isActive     Boolean  @default(true)
+  createdAt    DateTime @default(now())
+  updatedAt    DateTime @updatedAt
+
+  restaurant Restaurant @relation(fields: [restaurantId], references: [id])
+
+  category Category @relation(fields: [categoryId], references: [id])
+
+  media             ProductMedia[]
+  branchProducts    BranchProduct[]
+  discounts         ProductDiscount[]
+  reviews           ProductReview[]
+  orderItems        OrderItem[]
+  promotionProducts PromotionProduct[]
+
+  @@unique([restaurantId, slug])
+}
+
+model ProductMedia {
+  id        String    @id @default(uuid()) @db.Uuid
+  productId String    @db.Uuid
+  url       String
+  type      MediaType
+  altText   String?
+  position  Int       @default(0)
+  isPrimary Boolean   @default(false)
+  createdAt DateTime  @default(now())
+
+  product Product @relation(fields: [productId], references: [id])
+}
+
+model BranchProduct {
+  branchId    String   @db.Uuid
+  productId   String   @db.Uuid
+  price       Decimal?
+  isAvailable Boolean  @default(true)
+
+  branch Branch @relation(fields: [branchId], references: [id])
+
+  product Product @relation(fields: [productId], references: [id])
+
+  @@id([branchId, productId])
+}
+
+model ProductDiscount {
+  id        String       @id @default(uuid()) @db.Uuid
+  productId String       @db.Uuid
+  branchId  String?      @db.Uuid
+  type      DiscountType
+  value     Decimal
+  startAt   DateTime
+  endAt     DateTime
+  isActive  Boolean      @default(true)
+  createdAt DateTime     @default(now())
+  updatedAt DateTime     @updatedAt
+
+  product Product @relation(fields: [productId], references: [id])
+
+  branch Branch? @relation(fields: [branchId], references: [id])
+}
