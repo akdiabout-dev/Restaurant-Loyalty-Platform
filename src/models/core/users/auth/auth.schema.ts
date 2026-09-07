@@ -1,42 +1,47 @@
 import {z} from "zod";
+import {UserStatusEnum} from "../user.schema.js";
 
- const registerSchema = z.object({
-  email: z.email(),
-  password: z.string().min(8),
-  firstName: z.string().min(1),
-  lastName: z.string().min(1),
+export const passwordSchema = z
+  .string()
+  .min(8, "Password must be at least 8 characters long")
+  .max(100, "Password is too long");
+
+ // Register: Pick registration fields + require raw password
+export const registerSchema = z.object({
+  firstName: z.string().min(1, "First name is required"),
+  lastName: z.string().min(1, "Last name is required"),
+  email: z.string().email("Invalid email address"),
+  password: passwordSchema,
+  phone: z.string().nullable().optional(),
+  dateOfBirth: z.coerce.date().nullable().optional(),
 });
 
- const loginSchema = z.object({
-  email: z.email(),
-  password: z.string().min(8),
+export const createSchema = z.object({
+  firstName: z.string().min(1, "First name is required"),
+  lastName: z.string().min(1, "Last name is required"),
+  imageUrl: z.string().optional(),
+  email: z.string().email("Invalid email address"),
+  phone: z.string().nullable().optional(),
+  dateOfBirth: z.coerce.date().nullable().optional(),
 });
 
- const refreshTokenSchema = z.object({
-  refreshToken: z.string(),
+// Login: Identifier + Password
+export const loginSchema = z.object({
+  email: z.string().email("Invalid email address"),
+  password: z.string().min(1, "Password is required"),
 });
 
- const changePasswordSchema = z.object({
-  currentPassword: z.string().min(8),
-  newPassword: z.string().min(8),
+// Refresh Token Request
+export const refreshTokenSchema = z.object({
+  refreshToken: z.string().min(1, "Refresh token is required"),
 });
 
-const RefreshSessionSchema = z.object(
-  {
-    familyId: z.string().uuid().optional(),
-    tokenHash:z.string(),
-    revokedAt: z.date().optional(),
-    //Zod's z.date() expects a native JavaScript Date object,
-    // it will reject ISO date strings or timestamps
-    expiresAt: z.date(),
-    replacedById:z.string().optional(),
-    userId:z.string(),
-  }
-);
-export {
-    registerSchema,
-    loginSchema,
-    refreshTokenSchema,
-    changePasswordSchema,
-    RefreshSessionSchema
-}
+// Refresh session Request
+export const refreshSessionSchema = z.object({
+  userId: z.string().uuid(),
+  tokenHash: z.string().min(1, "tokenHash is required"),
+  familyId: z.string().uuid(),
+  expiresAt: z.coerce.date(),
+  revokedAt: z.coerce.date().nullable().optional(),
+  replacedById: z.string().uuid().nullable().optional(),
+});

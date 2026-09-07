@@ -3,7 +3,7 @@ model Restaurant {
   name          String
   slug          String   @unique
   description   String?
-  email         String? 
+  email         String?
   phone         String?
   website       String?
   logoUrl       String?
@@ -23,7 +23,7 @@ model Restaurant {
 
 model Branch {
   id           String   @id @default(uuid()) @db.Uuid
-  restaurantId String @db.Uuid
+  restaurantId String   @db.Uuid
   name         String
   code         String
   phone        String?
@@ -56,7 +56,7 @@ model Branch {
 
 model RestaurantMedia {
   id           String    @id @default(uuid()) @db.Uuid
-  restaurantId String @db.Uuid
+  restaurantId String    @db.Uuid
   url          String
   type         MediaType
   altText      String?
@@ -96,8 +96,8 @@ model User {
 
 model StaffMember {
   id        String    @id @default(uuid()) @db.Uuid
-  userId    String @db.Uuid
-  branchId  String @db.Uuid
+  userId    String    @db.Uuid
+  branchId  String    @db.Uuid
   role      StaffRole
   isActive  Boolean   @default(true)
   createdAt DateTime  @default(now())
@@ -113,7 +113,7 @@ model StaffMember {
 model RefreshSession {
   id        String @id @default(uuid()) @db.Uuid
   tokenHash String @unique
-  familyId  String @default(uuid()) @db.Uuid
+ familyId String @db.Uuid
 
   revokedAt DateTime?
   expiresAt DateTime

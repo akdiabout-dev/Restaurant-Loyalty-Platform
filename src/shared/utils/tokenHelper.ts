@@ -2,22 +2,25 @@ import jwt from "jsonwebtoken";
 import { generateRandomToken } from "./hashHelper.js";
 import { env } from "../../config/env.js";
 import { LoginInput } from "../../models/core/users/auth/auth.types.js";
+import { UserResponse } from "../../models/core/users/user.types.js";
 
 
 const getUserPayload = (user: any) => {
-  if (!user.sub) {
+  if (!user.id) {
     throw new Error("User id is required to generate a token");
   }
 
   return {
-    sub: user.sub,
+    id: user.id,
     email: user.email.toLowerCase(),
   };
 };
 
 // ACCESS TOKEN
-const createAccessToken = (user: any) => {
+const createAccessToken = (user: UserResponse) => {
+  console.log("i am in token generation");
   return jwt.sign(
+    
     getUserPayload(user),
     env.JWT_ACCESS_SECRET,
     {
@@ -27,7 +30,7 @@ const createAccessToken = (user: any) => {
 };
 
 // REFRESH TOKEN
-const createRefreshToken = (user: any) => {
+const createRefreshToken = (user: UserResponse) => {
   const payload = {
     ...getUserPayload(user),
 
@@ -63,12 +66,10 @@ const getRefreshTokenExpiresAt = (refreshToken : string)=>{
   return new Date(decoded.exp * 1000)
 }
 
-const generateTokenPair = (user: any) => {
+const generateTokenPair = (user: UserResponse) => {
   const accessToken = createAccessToken(user);
   const refreshToken = createRefreshToken(user);
-
-
-
+  
   return {
     accessToken,
     refreshToken,

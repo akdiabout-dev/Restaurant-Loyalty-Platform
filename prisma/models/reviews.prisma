@@ -6,8 +6,8 @@ enum ReviewStatus {
 
 model BranchReview {
   id        String       @id @default(uuid()) @db.Uuid
-  branchId  String @db.Uuid
-  userId    String @db.Uuid
+  branchId  String       @db.Uuid
+  userId    String       @db.Uuid
   rating    Int
   comment   String?
   status    ReviewStatus @default(PENDING)
@@ -23,8 +23,8 @@ model BranchReview {
 
 model ProductReview {
   id          String       @id @default(uuid()) @db.Uuid
-  productId   String @db.Uuid
-  userId      String @db.Uuid
+  productId   String       @db.Uuid
+  userId      String       @db.Uuid
   orderItemId String?      @unique @db.Uuid
   rating      Int
   comment     String?

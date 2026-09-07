@@ -1,6 +1,6 @@
 model LoyaltyAccount {
   id                     String   @id @default(uuid()) @db.Uuid
-  userId             String   @unique @db.Uuid
+  userId                 String   @unique @db.Uuid
   pointsBalance          Int      @default(0)
   lifetimePointsEarned   Int      @default(0)
   lifetimePointsRedeemed Int      @default(0)
@@ -16,9 +16,9 @@ model LoyaltyAccount {
 
 model LoyaltyTransaction {
   id               String                 @id @default(uuid()) @db.Uuid
-  loyaltyAccountId String @db.Uuid
-  orderId          String? @db.Uuid
-  rewardId         String? @db.Uuid
+  loyaltyAccountId String                 @db.Uuid
+  orderId          String?                @db.Uuid
+  rewardId         String?                @db.Uuid
   type             LoyaltyTransactionType
   points           Int
   description      String?
@@ -39,7 +39,7 @@ model LoyaltyTransaction {
 
 // REWARD SCHEMA
 model Reward {
-  id         String @id @default(uuid()) @db.Uuid
+  id     String @id @default(uuid()) @db.Uuid
   userId String @db.Uuid
 
   name        String
